@@ -6,6 +6,7 @@ Create Date: 2026-02-25
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.engine.reflection import Inspector
 
 revision = 'a1b2c3d4e5f6'
 down_revision = ('b664ca1203a4', 'd5a720d1b99b')
@@ -13,9 +14,18 @@ branch_labels = None
 depends_on = None
 
 
+def _column_exists(table, column):
+    bind = op.get_bind()
+    inspector = Inspector.from_engine(bind)
+    cols = [c['name'] for c in inspector.get_columns(table)]
+    return column in cols
+
+
 def upgrade():
-    # Add user_theme column: 'light' | 'dark' | 'pride'  (default: light)
-    op.add_column('user', sa.Column('user_theme', sa.String(16), nullable=True))
+    # Guard: skip if column already exists (idempotent re-run)
+    if not _column_exists('user', 'user_theme'):
+        op.add_column('user', sa.Column('user_theme', sa.String(16), nullable=True))
+
     # Migrate existing in_dark_mode=True users to theme='dark'
     op.execute("""
         UPDATE "user"
@@ -28,4 +38,5 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_column('user', 'user_theme')
+    if _column_exists('user', 'user_theme'):
+        op.drop_column('user', 'user_theme')
