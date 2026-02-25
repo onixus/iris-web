@@ -1,0 +1,56 @@
+# Pipeline конфигурация для DFIR-IRIS RU
+
+iris:
+  url: "https://your-iris-instance"   # URL вашего IRIS
+  api_key: "YOUR_API_KEY"              # API ключ (Advanced → API Keys)
+  verify_ssl: true
+  timeout: 30
+
+# Классификация инцидентов по ключевым словам алерта
+classification:
+  ddos:
+    keywords: ["ddos", "flood", "amplification", "reflection", "botnet", "syn flood"]
+    template: "ddos_hacktivism_ru"
+    severity: 3
+  apt_phishing:
+    keywords: ["phishing", "spearphish", "malicious attachment", "apt", "lumma", "cloud atlas", "sticky werewolf"]
+    template: "apt_spearphishing_ru"
+    severity: 4
+  ransomware:
+    keywords: ["ransomware", "encrypt", "ransom", "locked", "cryptolocker"]
+    template: "ransomware_ru"
+    severity: 5
+  data_breach:
+    keywords: ["exfiltration", "data leak", "breach", "утечка", "выгрузка базы"]
+    template: "data_breach_ru"
+    severity: 4
+
+# Обогащение IOC
+enrichment:
+  virustotal:
+    enabled: true
+    api_key: "YOUR_VT_KEY"
+    check_hashes: true
+    check_ips: true
+    check_urls: true
+  pt_ti:
+    enabled: false
+    api_key: "YOUR_PT_TI_KEY"
+
+# Уведомления
+notifications:
+  telegram:
+    enabled: true
+    bot_token: "YOUR_TG_BOT_TOKEN"
+    chat_id: "YOUR_CHAT_ID"
+    notify_on: ["case_created", "severity_high", "gossopka_deadline"]
+  mattermost:
+    enabled: false
+    webhook_url: "https://mattermost.example.com/hooks/xxx"
+
+# Регуляторные дедлайны (в часах)
+compliance:
+  gossopka_kii_notify_hours: 3     # 187-ФЗ: уведомить НКЦКИ за 3 часа
+  rkn_pdн_primary_hours: 24        # 149-ФЗ: первичное уведомление РКН
+  rkn_pdн_extended_hours: 72       # 149-ФЗ: расширенное уведомление РКН
+  auto_remind: true                # Напоминание в Telegram при приближении дедлайна

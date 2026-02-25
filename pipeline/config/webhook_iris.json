@@ -1,0 +1,62 @@
+{
+  "instance_url": "https://your-iris-instance",
+  "webhooks": [
+    {
+      "name": "Pipeline-Alert-Created",
+      "active": true,
+      "trigger_on": [
+        "on_postload_alert_create",
+        "on_postload_alert_update"
+      ],
+      "request_url": "http://pipeline-host:8000/webhook/alert",
+      "request_method": "POST",
+      "request_rendering": "json",
+      "request_body": {
+        "event": "%HOOK_NAME%",
+        "alert_id": "%ALERT_ID%",
+        "alert_title": "%ALERT_TITLE%",
+        "alert_severity": "%ALERT_SEVERITY%",
+        "alert_status": "%ALERT_STATUS%",
+        "alert_source": "%ALERT_SOURCE%",
+        "alert_source_ref": "%ALERT_SOURCE_REF%",
+        "alert_iocs": "%ALERT_IOCS%",
+        "alert_description": "%ALERT_DESCRIPTION%"
+      }
+    },
+    {
+      "name": "Pipeline-Case-Created",
+      "active": true,
+      "trigger_on": [
+        "on_postload_case_create"
+      ],
+      "request_url": "http://pipeline-host:8000/webhook/case",
+      "request_method": "POST",
+      "request_rendering": "json",
+      "request_body": {
+        "event": "%HOOK_NAME%",
+        "case_id": "%CASE_ID%",
+        "case_name": "%CASE_NAME%",
+        "case_description": "%CASE_DESCRIPTION%",
+        "case_customer": "%CASE_CUSTOMER%",
+        "case_tags": "%CASE_TAGS%"
+      }
+    },
+    {
+      "name": "Pipeline-IOC-Added",
+      "active": true,
+      "trigger_on": [
+        "on_postload_ioc_create"
+      ],
+      "request_url": "http://pipeline-host:8000/webhook/ioc",
+      "request_method": "POST",
+      "request_rendering": "json",
+      "request_body": {
+        "event": "%HOOK_NAME%",
+        "case_id": "%CASE_ID%",
+        "ioc_value": "%IOC_VALUE%",
+        "ioc_type": "%IOC_TYPE%",
+        "ioc_description": "%IOC_DESCRIPTION%"
+      }
+    }
+  ]
+}
