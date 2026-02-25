@@ -37,7 +37,11 @@
         customer: 'Customer', openedAt: 'Opened', closedAt: 'Closed',
         severity: 'Severity', tlp: 'TLP', pap: 'PAP', summary: 'Summary',
         tasks: 'Tasks', timeline: 'Timeline', ioc: 'IOC', assets: 'Assets',
-        notes: 'Notes', evidence: 'Evidence', graph: 'Graph', pipelines: 'Pipelines'
+        notes: 'Notes', evidence: 'Evidence', graph: 'Graph', pipelines: 'Pipelines',
+        manage: 'Manage', processors: 'Processors',
+        requestReview: 'Request review',
+        generateReport: 'Generate report',
+        activityReport: 'Activity report'
       },
       alerts: {
         title: 'Alerts', id: 'Alert ID', title_col: 'Title', source: 'Source',
@@ -154,7 +158,12 @@
         notes: 'Заметки',
         evidence: 'Доказательства',
         graph: 'Граф',
-        pipelines: 'Пайплайны'
+        pipelines: 'Пайплайны',
+        manage: 'Управлять',
+        processors: 'Процессоры',
+        requestReview: 'Запросить проверку',
+        generateReport: 'Создать отчёт',
+        activityReport: 'Отчёт активности'
       },
       alerts: {
         title: 'Алерты',
