@@ -1,14 +1,14 @@
 """add user_theme column
 
 Revision ID: a1b2c3d4e5f6
-Revises: b664ca1203a4
+Revises: (b664ca1203a4, d5a720d1b99b)
 Create Date: 2026-02-25
 """
 from alembic import op
 import sqlalchemy as sa
 
 revision = 'a1b2c3d4e5f6'
-down_revision = 'b664ca1203a4'
+down_revision = ('b664ca1203a4', 'd5a720d1b99b')
 branch_labels = None
 depends_on = None
 
