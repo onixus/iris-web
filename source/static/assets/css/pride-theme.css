@@ -1,0 +1,482 @@
+/*
+ * IRIS Web — Pride Theme
+ * Windows Pride Edition
+ * Rainbow accents, gradient navbar/sidebar, readable dark content.
+ */
+
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --pride-red:    #E40303;
+  --pride-orange: #FF8C00;
+  --pride-yellow: #FFED00;
+  --pride-green:  #008026;
+  --pride-blue:   #004DFF;
+  --pride-violet: #750787;
+
+  /* Gradient used on primary surfaces */
+  --pride-gradient: linear-gradient(
+    90deg,
+    var(--pride-red)    0%,
+    var(--pride-orange) 20%,
+    var(--pride-yellow) 40%,
+    var(--pride-green)  60%,
+    var(--pride-blue)   80%,
+    var(--pride-violet) 100%
+  );
+
+  /* UI palette */
+  --pride-bg:          #1a1a2e;
+  --pride-bg-card:     #16213e;
+  --pride-bg-sidebar:  #0f3460;
+  --pride-text:        #e0e0e0;
+  --pride-text-muted:  #9090a0;
+  --pride-border:      rgba(255,255,255,0.08);
+  --pride-accent:      #ff6eb4;
+}
+
+/* ============================================================
+   BODY & BASE
+   ============================================================ */
+body.theme-pride {
+  background-color: var(--pride-bg) !important;
+  color: var(--pride-text) !important;
+}
+
+/* ============================================================
+   RAINBOW STRIPE — top of every page
+   ============================================================ */
+body.theme-pride::before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--pride-gradient);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+body.theme-pride .navbar,
+body.theme-pride .main-header {
+  background: linear-gradient(135deg, #0f3460 0%, #16213e 100%) !important;
+  border-bottom: 3px solid transparent !important;
+  border-image: var(--pride-gradient) 1 !important;
+}
+
+body.theme-pride .navbar-brand,
+body.theme-pride .navbar .nav-link,
+body.theme-pride .navbar .navbar-text,
+body.theme-pride .main-header .nav-link {
+  color: #fff !important;
+}
+
+body.theme-pride .navbar .nav-link:hover {
+  color: var(--pride-accent) !important;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+body.theme-pride .sidebar,
+body.theme-pride #sidebar,
+body.theme-pride .side-menu {
+  background: var(--pride-bg-sidebar) !important;
+  border-right: 1px solid var(--pride-border) !important;
+}
+
+body.theme-pride .sidebar .nav-item .nav-link,
+body.theme-pride .side-menu .nav-item .nav-link,
+body.theme-pride .sidebar a {
+  color: #cdd5f3 !important;
+}
+
+body.theme-pride .sidebar .nav-item.active > .nav-link,
+body.theme-pride .sidebar .nav-item .nav-link:hover,
+body.theme-pride .side-menu .nav-item.active > .nav-link {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 6px;
+}
+
+/* Rainbow left border on active sidebar item */
+body.theme-pride .sidebar .nav-item.active > .nav-link {
+  border-left: 3px solid var(--pride-accent) !important;
+  padding-left: calc(1rem - 3px) !important;
+}
+
+body.theme-pride .sidebar .sidebar-title,
+body.theme-pride .sidebar .nav-section {
+  color: var(--pride-text-muted) !important;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: .08em;
+}
+
+/* ============================================================
+   MAIN PANEL / CONTENT AREA
+   ============================================================ */
+body.theme-pride .main-panel,
+body.theme-pride .content {
+  background-color: var(--pride-bg) !important;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+body.theme-pride .card {
+  background-color: var(--pride-bg-card) !important;
+  border: 1px solid var(--pride-border) !important;
+  border-top: 3px solid transparent !important;
+  border-image: var(--pride-gradient) 1 !important;
+  color: var(--pride-text) !important;
+  border-radius: 8px !important;
+}
+
+body.theme-pride .card-header {
+  background-color: rgba(255,255,255,0.04) !important;
+  border-bottom: 1px solid var(--pride-border) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+body.theme-pride .card-body,
+body.theme-pride .card-footer {
+  color: var(--pride-text) !important;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+body.theme-pride table,
+body.theme-pride .table {
+  color: var(--pride-text) !important;
+  border-color: var(--pride-border) !important;
+}
+
+body.theme-pride .table thead th {
+  background-color: var(--pride-bg-sidebar) !important;
+  color: #fff !important;
+  border-bottom: 2px solid var(--pride-border) !important;
+  position: relative;
+}
+
+/* Rainbow underline on table header */
+body.theme-pride .table thead tr::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: var(--pride-gradient);
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+}
+
+body.theme-pride .table tbody tr {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--pride-border) !important;
+}
+
+body.theme-pride .table tbody tr:hover {
+  background-color: rgba(255,255,255,0.05) !important;
+}
+
+body.theme-pride .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255,255,255,0.03) !important;
+}
+
+/* DataTables */
+body.theme-pride .dataTables_wrapper .dataTables_info,
+body.theme-pride .dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: var(--pride-text) !important;
+}
+body.theme-pride .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--pride-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: 4px;
+}
+body.theme-pride .dataTables_wrapper .dataTables_filter input,
+body.theme-pride .dataTables_wrapper .dataTables_length select {
+  background-color: var(--pride-bg) !important;
+  color: var(--pride-text) !important;
+  border: 1px solid var(--pride-border) !important;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+body.theme-pride .btn-primary {
+  background: var(--pride-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+body.theme-pride .btn-primary:hover {
+  opacity: 0.88;
+  filter: brightness(1.1);
+}
+
+body.theme-pride .btn-secondary,
+body.theme-pride .btn-default {
+  background-color: rgba(255,255,255,0.08) !important;
+  border: 1px solid var(--pride-border) !important;
+  color: var(--pride-text) !important;
+}
+
+body.theme-pride .btn-danger  { background-color: #c0392b !important; border-color: #c0392b !important; }
+body.theme-pride .btn-success { background-color: #27ae60 !important; border-color: #27ae60 !important; }
+body.theme-pride .btn-warning { background-color: #e67e22 !important; border-color: #e67e22 !important; color: #fff !important; }
+
+/* ============================================================
+   FORMS & INPUTS
+   ============================================================ */
+body.theme-pride input,
+body.theme-pride select,
+body.theme-pride textarea,
+body.theme-pride .form-control {
+  background-color: #0f1a2e !important;
+  color: var(--pride-text) !important;
+  border: 1px solid var(--pride-border) !important;
+  border-radius: 5px !important;
+}
+
+body.theme-pride input:focus,
+body.theme-pride select:focus,
+body.theme-pride textarea:focus,
+body.theme-pride .form-control:focus {
+  border-color: var(--pride-accent) !important;
+  box-shadow: 0 0 0 3px rgba(255,110,180,0.2) !important;
+  outline: none;
+}
+
+body.theme-pride .form-control::placeholder {
+  color: var(--pride-text-muted) !important;
+}
+
+body.theme-pride label {
+  color: var(--pride-text) !important;
+}
+
+/* Bootstrap-select */
+body.theme-pride .bootstrap-select .dropdown-toggle {
+  background-color: #0f1a2e !important;
+  color: var(--pride-text) !important;
+  border: 1px solid var(--pride-border) !important;
+}
+body.theme-pride .bootstrap-select .dropdown-menu {
+  background-color: var(--pride-bg-card) !important;
+  border: 1px solid var(--pride-border) !important;
+}
+body.theme-pride .bootstrap-select .dropdown-item {
+  color: var(--pride-text) !important;
+}
+body.theme-pride .bootstrap-select .dropdown-item:hover {
+  background-color: rgba(255,255,255,0.07) !important;
+}
+
+/* ============================================================
+   BADGES & ALERTS
+   ============================================================ */
+body.theme-pride .badge-primary  { background: var(--pride-gradient) !important; color: #fff !important; }
+body.theme-pride .badge-secondary { background-color: rgba(255,255,255,0.15) !important; color: #fff !important; }
+
+body.theme-pride .alert-info {
+  background-color: rgba(0,77,255,0.15) !important;
+  border-color: rgba(0,77,255,0.4) !important;
+  color: #a0c8ff !important;
+}
+body.theme-pride .alert-warning {
+  background-color: rgba(255,140,0,0.15) !important;
+  border-color: rgba(255,140,0,0.4) !important;
+  color: #ffd080 !important;
+}
+body.theme-pride .alert-danger {
+  background-color: rgba(228,3,3,0.15) !important;
+  border-color: rgba(228,3,3,0.4) !important;
+  color: #ff9090 !important;
+}
+body.theme-pride .alert-success {
+  background-color: rgba(0,128,38,0.15) !important;
+  border-color: rgba(0,128,38,0.4) !important;
+  color: #7fe0a0 !important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+body.theme-pride .modal-content {
+  background-color: var(--pride-bg-card) !important;
+  border: 1px solid var(--pride-border) !important;
+  color: var(--pride-text) !important;
+}
+
+body.theme-pride .modal-header {
+  border-bottom: 3px solid transparent !important;
+  border-image: var(--pride-gradient) 1 !important;
+  background-color: rgba(255,255,255,0.03) !important;
+}
+
+body.theme-pride .modal-title { color: #fff !important; }
+
+body.theme-pride .modal-footer {
+  border-top: 1px solid var(--pride-border) !important;
+}
+
+body.theme-pride .close, body.theme-pride .btn-close {
+  color: #fff !important;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   TABS & NAV-PILLS
+   ============================================================ */
+body.theme-pride .nav-tabs .nav-link {
+  color: var(--pride-text-muted) !important;
+  border: 1px solid transparent;
+}
+body.theme-pride .nav-tabs .nav-link:hover {
+  color: #fff !important;
+  border-color: var(--pride-border);
+}
+body.theme-pride .nav-tabs .nav-link.active {
+  color: #fff !important;
+  background: transparent !important;
+  border-bottom: 3px solid transparent !important;
+  border-image: var(--pride-gradient) 1 !important;
+  font-weight: 600;
+}
+
+body.theme-pride .nav-pills .nav-link.active {
+  background: var(--pride-gradient) !important;
+  color: #fff !important;
+}
+
+body.theme-pride .tab-content { color: var(--pride-text) !important; }
+
+/* ============================================================
+   DROPDOWNS
+   ============================================================ */
+body.theme-pride .dropdown-menu {
+  background-color: var(--pride-bg-card) !important;
+  border: 1px solid var(--pride-border) !important;
+}
+body.theme-pride .dropdown-item {
+  color: var(--pride-text) !important;
+}
+body.theme-pride .dropdown-item:hover {
+  background-color: rgba(255,255,255,0.07) !important;
+  color: #fff !important;
+}
+body.theme-pride .dropdown-divider {
+  border-top: 1px solid var(--pride-border) !important;
+}
+
+/* ============================================================
+   TOOLTIPS & POPOVERS
+   ============================================================ */
+body.theme-pride .tooltip-inner {
+  background-color: var(--pride-bg-sidebar) !important;
+  color: #fff !important;
+}
+body.theme-pride .popover {
+  background-color: var(--pride-bg-card) !important;
+  border: 1px solid var(--pride-border) !important;
+}
+body.theme-pride .popover-header {
+  background-color: rgba(255,255,255,0.05) !important;
+  color: #fff !important;
+  border-bottom: 1px solid var(--pride-border) !important;
+}
+body.theme-pride .popover-body { color: var(--pride-text) !important; }
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+body.theme-pride .breadcrumb {
+  background-color: transparent !important;
+}
+body.theme-pride .breadcrumb-item a { color: var(--pride-accent) !important; }
+body.theme-pride .breadcrumb-item.active { color: var(--pride-text-muted) !important; }
+body.theme-pride .breadcrumb-item + .breadcrumb-item::before { color: var(--pride-text-muted) !important; }
+
+/* ============================================================
+   LISTS & MISC
+   ============================================================ */
+body.theme-pride .list-group-item {
+  background-color: var(--pride-bg-card) !important;
+  border-color: var(--pride-border) !important;
+  color: var(--pride-text) !important;
+}
+body.theme-pride .list-group-item.active {
+  background: var(--pride-gradient) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+body.theme-pride hr { border-color: var(--pride-border) !important; }
+body.theme-pride small, body.theme-pride .text-muted { color: var(--pride-text-muted) !important; }
+body.theme-pride a { color: var(--pride-accent) !important; }
+body.theme-pride a:hover { color: #ffaacc !important; text-decoration: none; }
+
+body.theme-pride code {
+  background-color: rgba(255,255,255,0.06) !important;
+  color: #ff9fc8 !important;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+body.theme-pride pre {
+  background-color: #0f1a2e !important;
+  border: 1px solid var(--pride-border) !important;
+  color: var(--pride-text) !important;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+body.theme-pride ::-webkit-scrollbar { width: 8px; height: 8px; }
+body.theme-pride ::-webkit-scrollbar-track { background: var(--pride-bg); }
+body.theme-pride ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+    var(--pride-red) 0%,
+    var(--pride-violet) 100%);
+  border-radius: 4px;
+}
+body.theme-pride ::-webkit-scrollbar-thumb:hover { opacity: 0.8; }
+
+/* ============================================================
+   ACE EDITOR
+   ============================================================ */
+body.theme-pride .ace_editor { border: 1px solid var(--pride-border) !important; }
+
+/* ============================================================
+   IRIS CASE TIMELINE — event dots
+   ============================================================ */
+body.theme-pride .timeline .timeline-item::before {
+  background: var(--pride-gradient) !important;
+}
+
+/* ============================================================
+   IRIS SEVERITY BADGES — subtle overrides for readability
+   ============================================================ */
+body.theme-pride .badge-danger  { background-color: #c0392b !important; }
+body.theme-pride .badge-warning { background-color: #e67e22 !important; color: #fff !important; }
+body.theme-pride .badge-info    { background-color: #2980b9 !important; }
+body.theme-pride .badge-success { background-color: #27ae60 !important; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+body.theme-pride .footer,
+body.theme-pride .main-footer {
+  background-color: var(--pride-bg-sidebar) !important;
+  border-top: 2px solid transparent !important;
+  border-image: var(--pride-gradient) 1 !important;
+  color: var(--pride-text-muted) !important;
+}
