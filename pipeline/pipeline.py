@@ -6,6 +6,7 @@ DFIR-IRIS Incident Response Pipeline (RU)
 Регуляторные требования: 187-ФЗ (КИИ/ГосСОПКА), 149-ФЗ (РКН/ПДн)
 
 Changelog:
+  v1.3: FIX добавлен case_soc_id с автогенерацией
   v1.2: ADD debug logging для IRIS API errors
   v1.2: FIX suppress SSL warnings
   v1.1: FIX кириллица в ключах конфига rkn_pdн_* → rkn_pdn_*
@@ -96,11 +97,17 @@ class IrisClient:
                     template_name: str, tags: list, severity: int) -> dict:
         """Create a case from template."""
         template_id = self.get_template_id(template_name)
+        
+        # Generate unique case_soc_id (required field in IRIS 2.4.7)
+        now = datetime.now()
+        case_soc_id = f"AUTO-{now.strftime('%Y%m%d-%H%M%S')}"
+        
         payload = {
             "case_name": title,
             "case_description": description,
             "case_customer": 1,
             "case_severity_id": severity,
+            "case_soc_id": case_soc_id,  # FIX: required field
             "case_template_fname": template_name,
             "case_tags": ",".join(tags)
         }
