@@ -1,0 +1,36 @@
+# docker-compose.override.yml
+# Монтирует локальные static/ и templates/ прямо в работающий контейнер.
+# После git pull достаточно сделать  docker compose restart app worker
+# чтобы новые файлы стали доступны без пересборки образа.
+#
+# Для полной пересборки (новые Python-зависимости или Python-код):
+#   docker compose build --no-cache app && docker compose up -d
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/webApp/Dockerfile
+    image: iriswebapp_app:local
+    volumes:
+      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
+      - ./certificates/:/home/iris/certificates/:ro
+      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
+      - iris-downloads:/home/iris/downloads
+      - user_templates:/home/iris/user_templates
+      - server_data:/home/iris/server_data
+      # Hot-reload: static assets and templates mounted from host
+      - ./source/app/static:/iriswebapp/app/static:ro
+      - ./source/app/templates:/iriswebapp/app/templates:ro
+
+  worker:
+    image: iriswebapp_app:local
+    volumes:
+      - ./certificates/rootCA/irisRootCACert.pem:/etc/irisRootCACert.pem:ro
+      - ./certificates/:/home/iris/certificates/:ro
+      - ./certificates/ldap/:/iriswebapp/certificates/ldap/:ro
+      - iris-downloads:/home/iris/downloads
+      - user_templates:/home/iris/user_templates
+      - server_data:/home/iris/server_data
+      # Hot-reload: static assets mounted from host
+      - ./source/app/static:/iriswebapp/app/static:ro
