@@ -6,6 +6,7 @@ DFIR-IRIS Incident Response Pipeline (RU)
 Регуляторные требования: 187-ФЗ (КИИ/ГосСОПКА), 149-ФЗ (РКН/ПДн)
 
 Changelog:
+  v1.5: FIX убран case_template_id (IRIS 2.4.7 bug workaround)
   v1.4: FIX формат case_soc_id → ALRTX-DD.MM.YYYY-ID
   v1.3: FIX добавлен case_soc_id с автогенерацией
   v1.2: ADD debug logging для IRIS API errors
@@ -97,8 +98,6 @@ class IrisClient:
     def create_case(self, title: str, description: str,
                     template_name: str, tags: list, severity: int) -> dict:
         """Create a case from template."""
-        template_id = self.get_template_id(template_name)
-        
         # Generate unique case_soc_id in format: ALRTX-DD.MM.YYYY-ID
         # ID = last 4 digits of unix timestamp (semi-sequential within same day)
         now = datetime.now()
@@ -115,8 +114,10 @@ class IrisClient:
             "case_template_fname": template_name,
             "case_tags": ",".join(tags)
         }
-        if template_id:
-            payload["case_template_id"] = template_id
+        # NOTE: case_template_id causes TypeError in IRIS 2.4.7
+        # Bug: app/business/cases.py line 92 expects string, gets int
+        # Workaround: use only case_template_fname, IRIS will find template by name
+        
         return self._post("/manage/cases/add", payload)
 
     def add_ioc(self, case_id: int, value: str, ioc_type: str,
