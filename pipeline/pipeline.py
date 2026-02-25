@@ -6,6 +6,8 @@ DFIR-IRIS Incident Response Pipeline (RU)
 Регуляторные требования: 187-ФЗ (КИИ/ГосСОПКА), 149-ФЗ (РКН/ПДн)
 
 Changelog:
+  v1.2: ADD debug logging для IRIS API errors
+  v1.2: FIX suppress SSL warnings
   v1.1: FIX кириллица в ключах конфига rkn_pdн_* → rkn_pdn_*
   v1.1: FIX Content-Type на /webhook/ioc
   v1.1: FIX проверка case_id на None + логирование
@@ -21,7 +23,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import requests
+import urllib3
 from dotenv import load_dotenv
+
+# Suppress SSL warnings for self-signed certificates
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 load_dotenv()
 logging.basicConfig(
@@ -63,8 +69,18 @@ class IrisClient:
         return r.json()
 
     def _post(self, path: str, data: dict) -> dict:
+        """POST request with detailed error logging."""
         r = requests.post(f"{self.base}{path}", headers=self.headers,
                           json=data, verify=self.verify)
+        # Log detailed error info if status >= 400
+        if r.status_code >= 400:
+            log.error(f"❌ IRIS API {r.status_code} {path}")
+            log.error(f"📤 Request payload: {json.dumps(data, indent=2)}")
+            try:
+                error_detail = r.json()
+                log.error(f"📥 Response: {json.dumps(error_detail, indent=2)}")
+            except:
+                log.error(f"📥 Response text: {r.text[:500]}")
         r.raise_for_status()
         return r.json()
 
