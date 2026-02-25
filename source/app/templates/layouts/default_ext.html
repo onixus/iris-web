@@ -29,11 +29,28 @@
 
     <!-- Specific CSS goes HERE -->
     {% block stylesheets %}{% endblock stylesheets %}
-	{% if current_user.in_dark_mode %}
-		<link rel="stylesheet" href="/static/assets/css/dark-theme.css">
+
+	{% set _theme = current_user.effective_theme if current_user.is_authenticated else 'light' %}
+
+	<!-- Theme CSS -->
+	{% if _theme == 'dark' %}
+		<link rel="stylesheet" href="/static/assets/css/dark-theme.css" id="iris-theme-css">
+	{% elif _theme == 'pride' %}
+		<link rel="stylesheet" href="/static/assets/css/pride-theme.css" id="iris-theme-css">
+	{% else %}
+		<link rel="stylesheet" href="" id="iris-theme-css"><!-- light: no extra CSS -->
 	{% endif %}
+
+	<style>
+		.iris-locale-btn.active, .iris-theme-btn.active {
+			border-color: rgba(255,255,255,0.9) !important;
+			color: #fff !important;
+			background: rgba(255,255,255,0.15) !important;
+			font-weight: 700;
+		}
+	</style>
 </head>
-<body>
+<body class="theme-{{ _theme }}">
 	<div class="wrapper {% block layout %}{% endblock layout %} {% include 'includes/sidebar_handler.html' %}">
 
 
@@ -86,6 +103,20 @@
 	<script src="/static/assets/js/plugin/ace/src-noconflict/ext-language_tools.js" type="text/javascript"
     charset="utf-8"></script>
 
+	<!-- IRIS i18n — must load before common.js -->
+	<script src="/static/assets/js/iris/i18n.js"></script>
+	<script>
+		(function () {
+			var saved = localStorage.getItem('iris_locale') || 'en';
+			document.documentElement.setAttribute('lang', saved);
+			document.addEventListener('DOMContentLoaded', function () {
+				document.querySelectorAll('.iris-locale-btn').forEach(function (btn) {
+					btn.classList.toggle('active', btn.dataset.locale === saved);
+				});
+			});
+		}());
+	</script>
+
 	<script src="/static/assets/js/iris/common.js"></script>
 	<script src="/static/assets/js/iris/datastore.js"></script>
 
@@ -94,7 +125,40 @@
 	<script src="/static/assets/js/plugin/xss/xss.js"></script>
 	<script src="/static/assets/js/plugin/showdown/showdown.min.js" type="text/javascript" charset="utf-8"></script>
 
+	<!-- Theme switcher JS -->
+	<script>
+		var IRIS_CURRENT_THEME = '{{ _theme }}';
 
+		var THEME_CSS = {
+			light: '',
+			dark:  '/static/assets/css/dark-theme.css',
+			pride: '/static/assets/css/pride-theme.css'
+		};
+
+		function iris_set_theme(theme) {
+			if (!THEME_CSS.hasOwnProperty(theme)) return;
+			document.getElementById('iris-theme-css').href = THEME_CSS[theme];
+			document.body.classList.remove('theme-light', 'theme-dark', 'theme-pride');
+			document.body.classList.add('theme-' + theme);
+			document.querySelectorAll('.iris-theme-btn').forEach(function(btn) {
+				btn.classList.toggle('active', btn.dataset.theme === theme);
+			});
+			IRIS_CURRENT_THEME = theme;
+			$.ajax({
+				url: '/profile/theme',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ theme: theme }),
+				error: function() { console.warn('[theme] Failed to save theme preference'); }
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			document.querySelectorAll('.iris-theme-btn').forEach(function(btn) {
+				btn.classList.toggle('active', btn.dataset.theme === IRIS_CURRENT_THEME);
+			});
+		});
+	</script>
 
 	<!-- Specific JS goes HERE -->
     {% block javascripts %}{% endblock javascripts %}
