@@ -1,0 +1,85 @@
+{
+  "name": "apt_spearphishing_ru",
+  "display_name": "Целевой фишинг / APT-атака",
+  "description": "Реагирование на целевую фишинговую атаку APT-группировки на госсектор, ОПК, телеком.",
+  "author": "SOC-RU",
+  "classification": "social-engineering:phishing",
+  "title_prefix": "[APT-FISH]",
+  "summary": "# Контекст\n\n**Жертва (подразделение/роль):**\n**Вредоносный файл:**\n**Предполагаемая группировка:**\n\n# Контакты\n\n**Пострадавший пользователь:**\n**Владелец системы:**\n\n# Хронология\n\n",
+  "tags": ["apt", "phishing", "spearphishing", "infostealer", "lateral-movement"],
+  "tasks": [
+    {
+      "title": "Triage письма и вложения",
+      "description": "Извлечь письмо в .eml, проверить заголовки (SPF/DKIM/DMARC), вложение отправить в sandbox (PT Sandbox / ANY.RUN). Зафиксировать IOC: хэши, URL, отправитель.",
+      "tags": ["triage", "identify"]
+    },
+    {
+      "title": "Изоляция скомпрометированной рабочей станции",
+      "description": "Отключить хост от сети (VLAN isolation или NAC), сохранить RAM-дамп и образ диска для дальнейшего анализа.",
+      "tags": ["contain", "collect"]
+    },
+    {
+      "title": "Сбор артефактов с хоста",
+      "description": "Запустить Velociraptor/OSQuery: собрать Prefetch, EventLog (4624/4625/4688/7045), PowerShell ScriptBlock, задачи планировщика, автозапуск (ASEP), сетевые соединения.",
+      "tags": ["collect", "forensics", "velociraptor"]
+    },
+    {
+      "title": "Анализ вредоносного ПО",
+      "description": "Статический и динамический анализ вредоноса. Сопоставить TTPs с матрицей MITRE ATT&CK. Для Sticky Werewolf — проверить Lumma Stealer, для Cloud Atlas — HTA/VBS implants.",
+      "tags": ["analyze", "malware", "mitre"]
+    },
+    {
+      "title": "Поиск горизонтального перемещения",
+      "description": "Проверить AD-логи на Pass-the-Hash/Ticket, Kerberoasting. Проанализировать LDAP-запросы, SMB-сессии, запуск PSExec/WMI с подозрительных хостов.",
+      "tags": ["analyze", "lateral-movement", "ad"]
+    },
+    {
+      "title": "Поиск утечки данных",
+      "description": "Проверить DLP-систему, прокси-логи на exfiltration (облака, DNS-туннелинг, HTTPS к нехарактерным IP). Сопоставить с данными BI.ZONE / F.A.C.C.T. TI.",
+      "tags": ["analyze", "exfiltration", "dlp"]
+    },
+    {
+      "title": "Уведомление ГосСОПКА / НКЦКИ",
+      "description": "Для субъектов КИИ — уведомление в течение 3 часов согласно 187-ФЗ. Подготовить карточку инцидента по форме НКЦКИ.",
+      "tags": ["reporting", "gossopka", "compliance"]
+    },
+    {
+      "title": "Устранение и восстановление",
+      "description": "Сброс учётных данных (все затронутые аккаунты + сервисные), пересборка хоста, патчинг уязвимостей, IOC-блокировки в NGFW/почтовом шлюзе.",
+      "tags": ["remediation", "recovery"]
+    }
+  ],
+  "note_directories": [
+    {
+      "title": "Идентификация",
+      "notes": [
+        {
+          "title": "IOC письма",
+          "content": "## Отправитель\n\n## Subject\n\n## Хэш вложения (MD5/SHA256)\n\n## URL из письма\n\n## MITRE Initial Access technique\n"
+        },
+        {
+          "title": "Атрибуция",
+          "content": "## Предполагаемая группировка\n\n## Признаки (TTP, инструменты)\n\n## Источник атрибуции (PT TI / F.A.C.C.T. / BI.ZONE)\n"
+        }
+      ]
+    },
+    {
+      "title": "Сбор артефактов",
+      "notes": [
+        {
+          "title": "Хостовые артефакты",
+          "content": "## Собранные файлы\n\n## Event IDs аномалии\n\n## Persistence механизмы\n"
+        }
+      ]
+    },
+    {
+      "title": "Регуляторная отчётность",
+      "notes": [
+        {
+          "title": "Карточка инцидента НКЦКИ",
+          "content": "## Категория КИИ\n\n## Номер уведомления\n\n## Дата/время\n\n## Значимость объекта КИИ\n"
+        }
+      ]
+    }
+  ]
+}

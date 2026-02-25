@@ -1,0 +1,71 @@
+{
+  "name": "ddos_hacktivism_ru",
+  "display_name": "DDoS-атака (хактивизм)",
+  "description": "Шаблон реагирования на DDoS-атаку хактивистских группировок на российские организации.",
+  "author": "SOC-RU",
+  "classification": "availability:ddos",
+  "title_prefix": "[DDOS]",
+  "summary": "# Контекст\n\n**Дата/время начала атаки:**\n**Затронутые сервисы:**\n**Предполагаемый источник:**\n\n# Контакты\n\n**Ответственный:**\n**Провайдер/NOC:**\n\n# Хронология действий\n\n",
+  "tags": ["ddos", "hacktivism", "availability", "botnet"],
+  "tasks": [
+    {
+      "title": "Первичная оценка масштаба атаки",
+      "description": "Определить тип DDoS (L3/L4/L7), интенсивность (Gbps/rps), затронутые IP и сервисы. Зафиксировать время начала.",
+      "tags": ["identify", "triage"]
+    },
+    {
+      "title": "Сбор netflow и логов защиты",
+      "description": "Выгрузить NetFlow/sFlow с border-роутеров, логи Anti-DDoS (USSC/Qrator/StormWall), логи WAF за период атаки.",
+      "tags": ["collect", "evidence"]
+    },
+    {
+      "title": "Активация средств митигации",
+      "description": "Подать заявку провайдеру на BGP Blackhole или подключить scrubbing-центр. Задокументировать время активации.",
+      "tags": ["contain"]
+    },
+    {
+      "title": "Анализ источников атаки",
+      "description": "Идентифицировать географию ботнета, ASN источников, признаки IoT-ботнетов (Mirai и производных). Поиск в TI-платформах (BI.ZONE ThreatVision, PT TI).",
+      "tags": ["analyze", "threat-intel"]
+    },
+    {
+      "title": "Уведомление ГосСОПКА / НКЦКИ",
+      "description": "Направить уведомление об инциденте в НКЦКИ согласно приказу ФСТЭК № 235 и 187-ФЗ (для КИИ).",
+      "tags": ["reporting", "compliance"]
+    },
+    {
+      "title": "Post-incident: hardening",
+      "description": "Подготовить рекомендации по усилению защиты: rate-limiting, geo-blocking, обновление правил WAF.",
+      "tags": ["remediation"]
+    }
+  ],
+  "note_directories": [
+    {
+      "title": "Идентификация",
+      "notes": [
+        {
+          "title": "Параметры атаки",
+          "content": "## Тип атаки\n\n## Пиковая нагрузка (Gbps/rps)\n\n## Затронутые ресурсы\n\n## Вектор (amplification/reflection/botnet)\n"
+        }
+      ]
+    },
+    {
+      "title": "Митигация",
+      "notes": [
+        {
+          "title": "Действия провайдера",
+          "content": "## Время подачи заявки\n\n## Применённые меры\n\n## Время восстановления\n"
+        }
+      ]
+    },
+    {
+      "title": "Регуляторная отчётность",
+      "notes": [
+        {
+          "title": "Уведомление НКЦКИ",
+          "content": "## Номер уведомления\n\n## Дата/время отправки\n\n## Ответ регулятора\n"
+        }
+      ]
+    }
+  ]
+}
