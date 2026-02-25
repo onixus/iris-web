@@ -1,0 +1,147 @@
+/*
+ * IRIS Web — Pride Theme
+ * В стиле Windows Pride (2021): радужный градиент на навбаре, яркие акценты на основных элементах.
+ */
+
+/* ── Pride gradient variables ── */
+:root {
+  --pride-red:    #E40303;
+  --pride-orange: #FF8C00;
+  --pride-yellow: #FFED00;
+  --pride-green:  #008026;
+  --pride-blue:   #004DFF;
+  --pride-violet: #750787;
+  --pride-gradient: linear-gradient(
+    90deg,
+    var(--pride-red)    0%,
+    var(--pride-orange) 20%,
+    var(--pride-yellow) 40%,
+    var(--pride-green)  60%,
+    var(--pride-blue)   80%,
+    var(--pride-violet) 100%
+  );
+  --pride-gradient-vert: linear-gradient(
+    180deg,
+    var(--pride-red)    0%,
+    var(--pride-orange) 20%,
+    var(--pride-yellow) 40%,
+    var(--pride-green)  60%,
+    var(--pride-blue)   80%,
+    var(--pride-violet) 100%
+  );
+}
+
+/* ── Navbar: rainbow gradient instead of blue ── */
+.theme-pride .navbar.bg-primary-gradient,
+.theme-pride .navbar-header {
+  background: var(--pride-gradient) !important;
+  border-bottom: 3px solid transparent;
+}
+
+/* ── Logo header ── */
+.theme-pride .logo-header {
+  background: rgba(0,0,0,0.18) !important;
+}
+
+/* ── Sidebar left border — vertical rainbow ── */
+.theme-pride .sidebar {
+  border-right: 4px solid transparent;
+  border-image: var(--pride-gradient-vert) 1;
+}
+
+/* Active sidebar nav item ── */
+.theme-pride .sidebar .nav-item.active > .nav-link,
+.theme-pride .sidebar .nav-item > .nav-link:hover {
+  background: linear-gradient(90deg, rgba(228,3,3,0.12), rgba(117,7,135,0.12)) !important;
+  border-left: 3px solid var(--pride-red);
+}
+
+.theme-pride .sidebar .nav-item:nth-child(2)  > .nav-link { border-left-color: var(--pride-orange); }
+.theme-pride .sidebar .nav-item:nth-child(3)  > .nav-link { border-left-color: var(--pride-yellow); }
+.theme-pride .sidebar .nav-item:nth-child(4)  > .nav-link { border-left-color: var(--pride-green);  }
+.theme-pride .sidebar .nav-item:nth-child(5)  > .nav-link { border-left-color: var(--pride-blue);   }
+.theme-pride .sidebar .nav-item:nth-child(6)  > .nav-link { border-left-color: var(--pride-violet); }
+
+/* ── Page title bar ── */
+.theme-pride .page-header,
+.theme-pride .page-pretitle {
+  background: none;
+}
+
+/* ── Buttons: primary gets rainbow gradient ── */
+.theme-pride .btn-primary {
+  background: var(--pride-gradient) !important;
+  border: none !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+  transition: opacity 0.2s;
+}
+.theme-pride .btn-primary:hover {
+  opacity: 0.88;
+}
+
+/* ── Cards: subtle rainbow top-border ── */
+.theme-pride .card {
+  border-top: 3px solid transparent;
+  border-image: var(--pride-gradient) 1;
+  border-radius: 4px;
+}
+
+/* ── Badge / label accents ── */
+.theme-pride .badge-primary,
+.theme-pride .label-primary {
+  background: var(--pride-gradient) !important;
+  color: #fff !important;
+}
+
+/* ── Table head ── */
+.theme-pride table.dataTable thead th,
+.theme-pride .table thead th {
+  border-bottom: 2px solid transparent;
+  border-image: var(--pride-gradient) 1;
+}
+
+/* ── Links ── */
+.theme-pride a:not(.btn):not(.nav-link):not(.dropdown-item) {
+  color: var(--pride-blue);
+}
+.theme-pride a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
+  color: var(--pride-violet);
+}
+
+/* ── Tabs active underline ── */
+.theme-pride .nav-tabs .nav-link.active {
+  border-bottom: 3px solid var(--pride-red);
+  color: var(--pride-red);
+}
+
+/* ── Scrollbar (webkit) ── */
+.theme-pride ::-webkit-scrollbar-thumb {
+  background: var(--pride-gradient);
+  border-radius: 4px;
+}
+.theme-pride ::-webkit-scrollbar { width: 7px; height: 7px; }
+.theme-pride ::-webkit-scrollbar-track { background: #f0f0f0; }
+
+/* ── Progress bars ── */
+.theme-pride .progress-bar {
+  background: var(--pride-gradient) !important;
+}
+
+/* ── Footer ── */
+.theme-pride .footer {
+  border-top: 2px solid transparent;
+  border-image: var(--pride-gradient) 1;
+}
+
+/* ── Theme switcher buttons inside pride mode ── */
+.theme-pride .iris-theme-btn.active {
+  border-color: #fff !important;
+  color: #fff !important;
+  background: rgba(255,255,255,0.2) !important;
+  font-weight: 700;
+}
+.theme-pride .iris-theme-btn {
+  border-color: rgba(255,255,255,0.5) !important;
+  color: rgba(255,255,255,0.85) !important;
+}

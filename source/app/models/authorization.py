@@ -211,13 +211,22 @@ class User(UserMixin, db.Model):
     active = Column(Boolean())
     api_key = Column(Text(), unique=True)
     external_id = Column(Text, unique=True)
-    in_dark_mode = Column(Boolean())
+    in_dark_mode = Column(Boolean())          # legacy — kept for compatibility
+    user_theme = Column(String(16))           # 'light' | 'dark' | 'pride'
     has_mini_sidebar = Column(Boolean(), default=False)
     has_deletion_confirmation = Column(Boolean(), default=False)
     is_service_account = Column(Boolean(), default=False)
     mfa_secrets = Column(Text, nullable=True)
     webauthn_credentials = Column(JSON, nullable=True)
     mfa_setup_complete = Column(Boolean(), default=False)
+
+    @property
+    def effective_theme(self):
+        """Return the active theme name: 'light', 'dark', or 'pride'."""
+        if self.user_theme in ('light', 'dark', 'pride'):
+            return self.user_theme
+        # Fall back to legacy in_dark_mode
+        return 'dark' if self.in_dark_mode else 'light'
 
     def __init__(self, user: str, name: str, email: str, password: str, active: bool,
                  external_id: str = None, is_service_account: bool = False, mfa_secret: str = None,
@@ -232,6 +241,7 @@ class User(UserMixin, db.Model):
         self.mfa_secrets = mfa_secret
         self.mfa_setup_complete = False
         self.webauthn_credentials = webauthn_credentials or []
+        self.user_theme = 'light'
 
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.user)

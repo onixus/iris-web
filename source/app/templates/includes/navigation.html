@@ -22,7 +22,7 @@
 			<!-- End Logo Header -->
 
 			<!-- Navbar Header -->
-			<nav class="navbar navbar-header navbar-expand-lg  bg-primary-gradient">
+			<nav class="navbar navbar-header navbar-expand-lg bg-primary-gradient">
 				
 				{% if current_user.is_authenticated %}
 				<div class="container-fluid">
@@ -81,8 +81,25 @@
 							</a>
 						</li>
 
+						<!-- Theme switcher -->
+						<li class="nav-item hidden-caret d-flex align-items-center" style="margin-left:8px;gap:3px;" title="Select theme">
+							<button class="iris-theme-btn btn btn-sm" data-theme="light"
+								onclick="iris_set_theme('light')"
+								style="padding:2px 7px;font-size:13px;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.65);border-radius:4px;"
+								title="Light theme">☀️</button>
+							<button class="iris-theme-btn btn btn-sm" data-theme="dark"
+								onclick="iris_set_theme('dark')"
+								style="padding:2px 7px;font-size:13px;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.65);border-radius:4px;"
+								title="Dark theme">🌙</button>
+							<button class="iris-theme-btn btn btn-sm" data-theme="pride"
+								onclick="iris_set_theme('pride')"
+								style="padding:2px 7px;font-size:13px;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.65);border-radius:4px;"
+								title="Pride theme">🏳️‍🌈</button>
+						</li>
+						<!-- End Theme switcher -->
+
 						<!-- Language switcher -->
-						<li class="nav-item hidden-caret d-flex align-items-center" style="margin-left:8px;">
+						<li class="nav-item hidden-caret d-flex align-items-center" style="margin-left:6px;">
 							<button class="iris-locale-btn btn btn-sm" data-locale="en"
 								onclick="iris_set_locale('en')"
 								style="padding:2px 7px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.6);border-radius:4px;"
