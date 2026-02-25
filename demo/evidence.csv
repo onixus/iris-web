@@ -1,0 +1,7 @@
+evidence_name,evidence_type,evidence_hash_sha256,evidence_description,storage_path,acquired_by,acquisition_date,case_id
+DC-01_disk_image.E01,Образ диска,a3f1e9c2d7b4f1e8c3d9a2b7f4e1c8d3a9b2e7f4c1d8a3b9e2f7c4d1a8b3e9f2,Полный образ диска DC-01 снятый 14.11.2025 05:45 UTC. Размер 500 ГБ.,/evidence/CASE-2025-001/disk/,Иванов А.С.,2025-11-14 05:45,CASE-2025-001
+lsass_dump_W10-HR-05.dmp,Дамп памяти,7b4c23f91a3e8d2c5b7a4f1e9c2d8b3a6f4e1c7d9b2a5f8e3c6d1b4a7f2e9c5d8,Дамп процесса LSASS с рабочей станции HR-05. Получен EDR-агентом.,/evidence/CASE-2025-001/memory/,Сидорова М.В.,2025-11-14 03:35,CASE-2025-001
+ngfw_export_20251114.csv,Лог NGFW,d9e0b13374a5c8f2d7e1b4c9a6f3e8d2b5c7a4f1e9d6b3a8c5f2e7d4b1a9c6f3,Экспорт сессий NGFW за 14.11.2025. Содержит сессии к TOR и C2.,/evidence/CASE-2025-001/logs/,Сидорова М.В.,2025-11-14 08:00,CASE-2025-001
+payload_lockbit.exe,Исполняемый файл,5f4dcc3b5aa765d61d8327deb882cf99a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6,Образец LockBit 3.0 получен с зараженного хоста W10-HR-05.,/evidence/CASE-2025-001/malware/,Иванов А.С.,2025-11-14 06:30,CASE-2025-001
+AD_audit_log_20251114.evtx,Журнал событий,b2c4d6e8f1a3c5e7b9d2f4a6c8e1b3d5f7a9c2e4b6d8f1a3c5e7b9d2f4a6c8e1,Журнал безопасности Active Directory за 13-14.11.2025.,/evidence/CASE-2025-001/logs/,Козлов И.Р.,2025-11-14 09:15,CASE-2025-001
+phishing_email.eml,Email,c3d5e7f9b1d3e5f7a9c2d4f6b8a1c3e5d7f9b2d4f6a8c1e3d5f7b9a2c4e6d8f1,Исходное фишинговое письмо с DOCX-вложением.,/evidence/CASE-2025-001/email/,Петров Д.О.,2025-11-14 06:00,CASE-2025-001

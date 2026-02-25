@@ -1,0 +1,11 @@
+event_date,event_title,event_content,event_source,event_category,mitre_tactic,mitre_technique,case_id
+2025-11-14 02:17,Первоначальный доступ,Phishing-письмо с вредоносным DOCX открыто пользователем ivanova_e. Отправитель: hr-info@rostech-update[.]ru,Email Gateway,Initial Access,TA0001,T1566.001,CASE-2025-001
+2025-11-14 02:31,Загрузка дроппера,HTTP GET на hxxps://update-service[.]ru/payload.exe (5.4 МБ). HTTP 200.,NGFW,Execution,TA0002,T1204.002,CASE-2025-001
+2025-11-14 02:35,Запуск Mimikatz,Дамп памяти LSASS на W10-HR-05. Извлечены хеши 3 доменных учётных записей.,EDR,Credential Access,TA0006,T1003.001,CASE-2025-001
+2025-11-14 03:02,Боковое перемещение,PsExec-соединение W10-HR-05 → DC-01 под учётными данными admin_backup.,Sysmon,Lateral Movement,TA0008,T1021.002,CASE-2025-001
+2025-11-14 03:18,Закрепление в системе,Ключ реестра HKLM\SOFTWARE\Microsoft\Windows\Run\updater32 создан на DC-01.,Sysmon,Persistence,TA0003,T1547.001,CASE-2025-001
+2025-11-14 03:45,Разведка и обнаружение,net view /domain и nltest /dclist запущены с DC-01.,Sysmon,Discovery,TA0007,T1018,CASE-2025-001
+2025-11-14 04:15,Выгрузка данных,Архив backup_nov.zip (2.3 ГБ) отправлен на 162.247.74.201 по HTTPS.,NGFW,Exfiltration,TA0010,T1041,CASE-2025-001
+2025-11-14 04:45,Начало шифрования,LockBit 3.0 запущен через GPO на 47 хостах. Расширение файлов изменено на .locked.,EDR,Impact,TA0040,T1486,CASE-2025-001
+2025-11-14 05:10,Обнаружение инцидента,SOC-аналитик Петров получил алерт EDR mass encryption. Инцидент открыт.,SIEM,Detection,—,—,CASE-2025-001
+2025-11-14 05:25,Изоляция хостов,Автоматическая изоляция скомпрометированных хостов через CrowdStrike.,EDR,Containment,—,—,CASE-2025-001
