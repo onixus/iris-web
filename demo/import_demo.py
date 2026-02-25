@@ -11,7 +11,7 @@ iris_demo_import.py
     python3 import_demo.py --url https://iris-host --token TOKEN --dry-run
 
 Требования:
-    pip install requests
+    pip install -r requirements.txt
 """
 
 import argparse
@@ -94,13 +94,32 @@ class IrisClient:
             return None
 
     def check_connection(self) -> bool:
+        """ Проверка подключения к IRIS API. """
         try:
-            r = self.get("/api/v2/users/me")
-            log.info("Подключено к IRIS: пользователь '%s'", r.get("data", {}).get("user_login", "?"))
-            return True
+            # Пробуем /manage/users/me (старый API v1/v2.0.x)
+            r = self.get("/manage/users/me")
+            if r.get("status") == "success":
+                user_login = r.get("data", {}).get("user_login") or r.get("data", {}).get("user_name", "?")
+                log.info("Подключено к IRIS: пользователь '%s'", user_login)
+                return True
+        except Exception:
+            pass
+
+        # Если не сработало, пробуем просто получить список клиентов
+        try:
+            r = self.get("/manage/customers/list")
+            if r.get("status") == "success":
+                log.info("Подключено к IRIS (проверено через /manage/customers/list)")
+                return True
         except Exception as e:
             log.error("Не удалось подключиться к IRIS: %s", e)
+            log.error("Проверьте:")
+            log.error("  1. URL корректен: %s", self.base_url)
+            log.error("  2. API-токен действителен (My Settings → API Key)")
+            log.error("  3. IRIS доступен по HTTPS (curl -k %s)", self.base_url)
             return False
+
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +156,7 @@ def import_clients(api: IrisClient) -> dict[str, int]:
     client_map: dict[str, int] = {}
     rows = load_csv("demo/clients.csv")
     for row in rows:
-        resp = api.post("/api/v2/clients", {
+        resp = api.post("/manage/customers/add", {
             "customer_name":        row["client_name"],
             "customer_description": row.get("client_description", ""),
             "customer_sla":         row.get("sla_hours", "8"),
@@ -156,12 +175,11 @@ def import_cases(api: IrisClient, client_map: dict[str, int]) -> dict[str, int]:
     rows = load_csv("demo/cases.csv")
     for row in rows:
         customer_iris_id = client_map.get(row.get("client_id", ""), 1)
-        resp = api.post("/api/v2/cases", {
+        resp = api.post("/manage/cases/add", {
             "case_name":        row["case_name"],
             "case_description": row.get("case_description", ""),
             "case_customer":    customer_iris_id,
             "case_soc_id":      row["case_name"],
-            "case_severity_id": SEVERITY_MAP.get(row.get("severity", "Medium"), 3),
         })
         case_id = extract_id(resp, "case_id", "id")
         if case_id:
@@ -175,7 +193,7 @@ def import_iocs(api: IrisClient, case_map: dict[str, int]) -> None:
     rows = load_csv("demo/iocs.csv")
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
-        resp = api.post(f"/api/v2/cases/{case_id}/iocs", {
+        resp = api.post(f"/case/ioc/add?cid={case_id}", {
             "ioc_value":       row["ioc_value"],
             "ioc_type_id":     1,
             "ioc_description": row.get("ioc_description", ""),
@@ -191,7 +209,7 @@ def import_assets(api: IrisClient, case_map: dict[str, int]) -> None:
     rows = load_csv("demo/assets.csv")
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
-        resp = api.post(f"/api/v2/cases/{case_id}/assets", {
+        resp = api.post(f"/case/assets/add?cid={case_id}", {
             "asset_name":                 row["asset_name"],
             "asset_type_id":              1,
             "asset_ip":                   row.get("asset_ip", ""),
@@ -207,18 +225,18 @@ def import_alerts(api: IrisClient, case_map: dict[str, int]) -> None:
     log.info("\n=== Алерты ===")
     rows = load_csv("demo/alerts.csv")
     for row in rows:
-        resp = api.post("/api/v2/alerts", {
+        resp = api.post("/alerts/add", {
             "alert_title":       row["alert_title"],
             "alert_source":      row.get("alert_source", "Unknown"),
             "alert_severity_id": SEVERITY_MAP.get(row.get("alert_severity", "Medium"), 3),
             "alert_status_id":   ALERT_STATUS_MAP.get(row.get("alert_status", "Открыт"), 1),
             "alert_customer_id": 1,
             "alert_description": row.get("description", ""),
-            "alert_source_content": {
+            "alert_source_content": json.dumps({
                 "ioc":            row.get("ioc_value", ""),
                 "classification": row.get("classification", ""),
                 "case_id":        row.get("case_id", ""),
-            },
+            }, ensure_ascii=False),
         })
         if resp:
             log.info("  + Алерт '%s'", row["alert_title"][:60])
@@ -229,7 +247,7 @@ def import_timeline(api: IrisClient, case_map: dict[str, int]) -> None:
     rows = load_csv("demo/timeline.csv")
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
-        resp = api.post(f"/api/v2/cases/{case_id}/timeline/events", {
+        resp = api.post(f"/case/timeline/events/add?cid={case_id}", {
             "event_date":          row["event_date"],
             "event_title":         row["event_title"],
             "event_content":       row.get("event_content", ""),
@@ -250,11 +268,11 @@ def import_tasks(api: IrisClient, case_map: dict[str, int]) -> None:
     rows = load_csv("demo/tasks.csv")
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
-        resp = api.post(f"/api/v2/cases/{case_id}/tasks", {
+        resp = api.post(f"/case/tasks/add?cid={case_id}", {
             "task_title":       row["task_title"],
             "task_description": row.get("task_description", ""),
             "task_status_id":   TASK_STATUS_MAP.get(row.get("task_status", "Не начата"), 1),
-            "task_assignees":   [],
+            "task_assignees_id":   [],
         })
         if resp:
             log.info("  + Задача '%s'", row["task_title"][:60])
@@ -266,11 +284,11 @@ def import_notes(api: IrisClient, case_map: dict[str, int]) -> None:
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
         # Сначала создаём группу заметок
-        grp = api.post(f"/api/v2/cases/{case_id}/notes/groups", {
+        grp = api.post(f"/case/notes/groups/add?cid={case_id}", {
             "group_title": "Демо-заметки"
         })
         group_id = extract_id(grp, "group_id", "id") or 1
-        resp = api.post(f"/api/v2/cases/{case_id}/notes", {
+        resp = api.post(f"/case/notes/add?cid={case_id}", {
             "note_title":    row["note_title"],
             "note_content":  row.get("note_content", ""),
             "group_id":      group_id,
@@ -284,7 +302,7 @@ def import_evidence(api: IrisClient, case_map: dict[str, int]) -> None:
     rows = load_csv("demo/evidence.csv")
     for row in rows:
         case_id = case_map.get(row.get("case_id", ""), next(iter(case_map.values()), 1))
-        resp = api.post(f"/api/v2/cases/{case_id}/evidences", {
+        resp = api.post(f"/case/evidences/add?cid={case_id}", {
             "filename":          row["evidence_name"],
             "file_description":  row.get("evidence_description", ""),
             "file_hash":         row.get("evidence_hash_sha256", ""),
@@ -337,21 +355,18 @@ def parse_args() -> argparse.Namespace:
         epilog="""
 Примеры:
   # Загрузить всё в IRIS
-  python3 import_demo.py --url https://iris.company.ru --token abc123
+  python3 import_demo.py --url https://127.0.0.1 --token abc123 --no-verify
 
   # Только посмотреть запросы без реальной отправки
-  python3 import_demo.py --url https://iris.company.ru --token abc123 --dry-run
+  python3 import_demo.py --url https://127.0.0.1 --token abc123 --dry-run
 
   # Загрузить логи ELK дополнительно
-  python3 import_demo.py --url https://iris.company.ru --token abc123 \\
+  python3 import_demo.py --url https://127.0.0.1 --token abc123 --no-verify \\
                          --elk-url http://localhost:9200
-
-  # Пропустить проверку SSL-сертификата
-  python3 import_demo.py --url https://iris.company.ru --token abc123 --no-verify
     """,
     )
-    p.add_argument("--url",       required=True,  help="Базовый URL IRIS, например https://iris.company.ru")
-    p.add_argument("--token",     required=True,  help="API-токен IRIS (Settings → API Keys)")
+    p.add_argument("--url",       required=True,  help="Базовый URL IRIS, например https://127.0.0.1")
+    p.add_argument("--token",     required=True,  help="API-токен IRIS (My Settings → API Key)")
     p.add_argument("--dry-run",   action="store_true", help="Не отправлять запросы, только вывести в лог")
     p.add_argument("--no-verify", action="store_true", help="Отключить проверку SSL-сертификата")
     p.add_argument("--elk-url",   default=None,   help="URL Elasticsearch для загрузки NDJSON-логов")
