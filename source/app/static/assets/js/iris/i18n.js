@@ -18,13 +18,18 @@
       nav: {
         dashboard: 'Dashboard', cases: 'Cases', alerts: 'Alerts',
         search: 'Search', datastore: 'Datastore', activities: 'Activities',
-        manage: 'Manage', logout: 'Logout', profile: 'My profile'
+        manage: 'Manage', logout: 'Logout', profile: 'My profile',
+        mySettings: 'My settings', overview: 'Overview', welcome: 'Welcome page',
+        investigation: 'Investigation', case: 'Case', dimTasks: 'DIM Tasks',
+        manageCases: 'Manage cases', advanced: 'Advanced', help: 'Help',
+        updatesAvailable: 'Updates are available for the server'
       },
       manage: {
         title: 'Administration', users: 'Users', groups: 'Groups',
-        customers: 'Customers', modules: 'Modules', objects: 'Object types',
-        attributes: 'Attributes', templates: 'Report templates',
-        caseTemplates: 'Case templates', serverSettings: 'Server settings', audit: 'Audit'
+        customers: 'Customers', modules: 'Modules', objects: 'Case Objects',
+        attributes: 'Custom Attributes', templates: 'Report Templates',
+        caseTemplates: 'Case Templates', serverSettings: 'Server settings',
+        accessControl: 'Access control', audit: 'Audit'
       },
       cases: {
         title: 'Cases', newCase: 'New case', id: 'Case #', name: 'Name',
@@ -102,7 +107,17 @@
         activities: '\u0410\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u044c',
         manage: '\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435',
         logout: '\u0412\u044b\u0439\u0442\u0438',
-        profile: '\u041c\u043e\u0439 \u043f\u0440\u043e\u0444\u0438\u043b\u044c'
+        profile: '\u041c\u043e\u0439 \u043f\u0440\u043e\u0444\u0438\u043b\u044c',
+        mySettings: '\u041c\u043e\u0438 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438',
+        overview: '\u041e\u0431\u0437\u043e\u0440',
+        welcome: '\u041d\u0430\u0447\u0430\u043b\u044c\u043d\u0430\u044f \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430',
+        investigation: '\u0420\u0430\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435',
+        case: '\u0418\u043d\u0446\u0438\u0434\u0435\u043d\u0442',
+        dimTasks: '\u0417\u0430\u0434\u0430\u0447\u0438 DIM',
+        manageCases: '\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0438\u043d\u0446\u0438\u0434\u0435\u043d\u0442\u0430\u043c\u0438',
+        advanced: '\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0435',
+        help: '\u041f\u043e\u043c\u043e\u0449\u044c',
+        updatesAvailable: '\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u044b \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f \u0441\u0435\u0440\u0432\u0435\u0440\u0430'
       },
       manage: {
         title: '\u0410\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435',
@@ -110,11 +125,12 @@
         groups: '\u0413\u0440\u0443\u043f\u043f\u044b',
         customers: '\u041a\u043b\u0438\u0435\u043d\u0442\u044b',
         modules: '\u041c\u043e\u0434\u0443\u043b\u0438',
-        objects: '\u0422\u0438\u043f\u044b \u043e\u0431\u044a\u0435\u043a\u0442\u043e\u0432',
-        attributes: '\u0410\u0442\u0440\u0438\u0431\u0443\u0442\u044b',
+        objects: '\u041e\u0431\u044a\u0435\u043a\u0442\u044b \u0438\u043d\u0446\u0438\u0434\u0435\u043d\u0442\u0430',
+        attributes: '\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u0441\u043a\u0438\u0435 \u0430\u0442\u0440\u0438\u0431\u0443\u0442\u044b',
         templates: '\u0428\u0430\u0431\u043b\u043e\u043d\u044b \u043e\u0442\u0447\u0451\u0442\u043e\u0432',
         caseTemplates: '\u0428\u0430\u0431\u043b\u043e\u043d\u044b \u0438\u043d\u0446\u0438\u0434\u0435\u043d\u0442\u043e\u0432',
         serverSettings: '\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0441\u0435\u0440\u0432\u0435\u0440\u0430',
+        accessControl: '\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0434\u043e\u0441\u0442\u0443\u043f\u043e\u043c',
         audit: '\u0410\u0443\u0434\u0438\u0442'
       },
       cases: {
@@ -330,9 +346,10 @@
 
   /**
    * Apply translations to elements with data-i18n attribute.
-   * <span data-i18n="common.save"></span>  → sets textContent
-   * <input data-i18n-placeholder="common.search"> → sets placeholder
-   * <button data-i18n-title="common.edit"> → sets title
+   * <span data-i18n="common.save"></span>          → sets textContent
+   * <input data-i18n-placeholder="common.search">  → sets placeholder
+   * <button data-i18n-title="common.edit">          → sets title
+   * <th data-i18n-dt-title="cases.id">              → sets DataTable column title (re-draw needed)
    */
   function applyToDOM() {
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
@@ -344,6 +361,12 @@
     document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
       el.title = t(el.getAttribute('data-i18n-title'));
     });
+    // document.title hint
+    var titleMeta = document.querySelector('[data-i18n-page-title]');
+    if (titleMeta) {
+      var suffix = titleMeta.getAttribute('data-i18n-page-title-suffix') || '';
+      document.title = t(titleMeta.getAttribute('data-i18n-page-title')) + (suffix ? ' | ' + suffix : '');
+    }
   }
 
   // Apply on DOMContentLoaded
