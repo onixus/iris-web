@@ -50,7 +50,7 @@ notifications:
 
 # Регуляторные дедлайны (в часах)
 compliance:
-  gossopka_kii_notify_hours: 3     # 187-ФЗ: уведомить НКЦКИ за 3 часа
-  rkn_pdн_primary_hours: 24        # 149-ФЗ: первичное уведомление РКН
-  rkn_pdн_extended_hours: 72       # 149-ФЗ: расширенное уведомление РКН
-  auto_remind: true                # Напоминание в Telegram при приближении дедлайна
+  gossopka_kii_notify_hours: 3    # 187-ФЗ: уведомить НКЦКИ за 3 часа
+  rkn_pdn_primary_hours: 24       # 149-ФЗ: первичное уведомление РКН  (FIX: было rkn_pdн_*)
+  rkn_pdn_extended_hours: 72      # 149-ФЗ: расширенное уведомление РКН (FIX: было rkn_pdн_*)
+  auto_remind: true               # Напоминание в Telegram при приближении дедлайна

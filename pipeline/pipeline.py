@@ -4,6 +4,11 @@ DFIR-IRIS Incident Response Pipeline (RU)
 Автоматизированный pipeline реагирования на инциденты.
 Поддерживает: DDoS, APT/Фишинг, Ransomware, Утечки данных.
 Регуляторные требования: 187-ФЗ (КИИ/ГосСОПКА), 149-ФЗ (РКН/ПДн)
+
+Changelog:
+  v1.1: FIX кириллица в ключах конфига rkn_pdн_* → rkn_pdn_*
+  v1.1: FIX Content-Type на /webhook/ioc
+  v1.1: FIX проверка case_id на None + логирование
 """
 
 import os
@@ -30,7 +35,6 @@ log = logging.getLogger("iris-pipeline")
 def load_config(path: str = "config/pipeline_config.yaml") -> dict:
     with open(path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    # Переменные окружения перекрывают файл
     cfg["iris"]["url"] = os.getenv("IRIS_URL", cfg["iris"]["url"])
     cfg["iris"]["api_key"] = os.getenv("IRIS_API_KEY", cfg["iris"]["api_key"])
     if os.getenv("VT_API_KEY"):
@@ -65,7 +69,7 @@ class IrisClient:
         return r.json()
 
     def get_template_id(self, template_name: str) -> Optional[int]:
-        """Получить ID шаблона кейса по имени."""
+        """Get case template ID by name."""
         resp = self._get("/manage/case-templates/list")
         for t in resp.get("data", []):
             if t.get("name") == template_name:
@@ -74,7 +78,7 @@ class IrisClient:
 
     def create_case(self, title: str, description: str,
                     template_name: str, tags: list, severity: int) -> dict:
-        """Создать кейс из шаблона."""
+        """Create a case from template."""
         template_id = self.get_template_id(template_name)
         payload = {
             "case_name": title,
@@ -90,7 +94,7 @@ class IrisClient:
 
     def add_ioc(self, case_id: int, value: str, ioc_type: str,
                 description: str = "", tlp: int = 2) -> dict:
-        """Добавить IOC в кейс."""
+        """Add IOC to a case."""
         payload = {
             "ioc_value": value,
             "ioc_type_id": self._resolve_ioc_type(ioc_type),
@@ -103,8 +107,7 @@ class IrisClient:
 
     def add_note(self, case_id: int, directory_name: str,
                  title: str, content: str) -> dict:
-        """Добавить заметку в директорию."""
-        # Получить или создать директорию
+        """Add note to a directory in a case."""
         dirs = self._get(f"/case/notes/directories/filter?cid={case_id}").get("data", [])
         dir_id = None
         for d in dirs:
@@ -124,7 +127,7 @@ class IrisClient:
         return self._post(f"/case/notes/add?cid={case_id}", payload)
 
     def _resolve_ioc_type(self, ioc_type: str) -> int:
-        """Маппинг типов IOC."""
+        """Map IOC type string to IRIS type ID."""
         mapping = {
             "ip": 76, "ip-dst": 76, "ip-src": 76,
             "domain": 20, "hostname": 12,
@@ -142,9 +145,9 @@ class IncidentClassifier:
         self.cfg = classification_cfg
 
     def classify(self, alert_title: str, alert_desc: str = "") -> str:
-        """Определить тип инцидента по тексту алерта."""
+        """Classify incident type by alert text."""
         text = (alert_title + " " + alert_desc).lower()
-        # Приоритет: ransomware > data_breach > apt_phishing > ddos
+        # Priority: ransomware > data_breach > apt_phishing > ddos
         priority_order = ["ransomware", "data_breach", "apt_phishing", "ddos"]
         for incident_type in priority_order:
             cfg = self.cfg.get(incident_type, {})
@@ -213,11 +216,12 @@ class TelegramNotifier:
     def notify_case_created(self, case_id: int, case_name: str,
                             incident_type: str, iris_url: str):
         emoji = {"ddos": "🌊", "apt_phishing": "🎣", "ransomware": "🔐", "data_breach": "💾"}
-        severity = {"ddos": "HIGH", "apt_phishing": "CRITICAL", "ransomware": "CRITICAL", "data_breach": "HIGH"}
+        severity = {"ddos": "HIGH", "apt_phishing": "CRITICAL",
+                    "ransomware": "CRITICAL", "data_breach": "HIGH"}
         icon = emoji.get(incident_type, "🚨")
         sev = severity.get(incident_type, "HIGH")
         msg = (
-            f"{icon} <b>Новый инцидент создан в DFIR-IRIS</b>\n"
+            f"{icon} <b>Новый инцидент в DFIR-IRIS</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
             f"📋 <b>Кейс:</b> #{case_id} — {case_name}\n"
             f"🔴 <b>Тип:</b> {incident_type.upper()}\n"
@@ -231,7 +235,7 @@ class TelegramNotifier:
                                     regulator: str, deadline_dt: datetime,
                                     iris_url: str):
         time_left = deadline_dt - datetime.now()
-        hours_left = int(time_left.total_seconds() / 3600)
+        hours_left = max(0, int(time_left.total_seconds() / 3600))
         msg = (
             f"⏳ <b>ДЕДЛАЙН РЕГУЛЯТОРА — {regulator}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
@@ -252,24 +256,24 @@ class ComplianceTimer:
         self.iris_url = iris_url
 
     def schedule(self, case_id: int, case_name: str, incident_type: str):
-        """Запустить таймеры дедлайнов в зависимости от типа инцидента."""
+        """Schedule regulatory deadline reminders."""
         now = datetime.now()
         deadlines = []
 
         if incident_type in ("apt_phishing", "ransomware", "data_breach", "ddos"):
-            # 187-ФЗ: ГосСОПКА/НКЦКИ — 3 часа (для КИИ)
+            # 187-ФЗ: ГосСОПКА/НКЦКИ — 3 часа
             gossopka_dl = now + timedelta(hours=self.cfg["gossopka_kii_notify_hours"])
             deadlines.append(("ГосСОПКА/НКЦКИ (187-ФЗ)", gossopka_dl))
 
         if incident_type == "data_breach":
             # 149-ФЗ: РКН — 24 и 72 часа
-            rkn_primary = now + timedelta(hours=self.cfg["rkn_pdн_primary_hours"])
-            rkn_extended = now + timedelta(hours=self.cfg["rkn_pdн_extended_hours"])
+            # FIX: исправлена кириллица в ключах (rkn_pdн_* → rkn_pdn_*)
+            rkn_primary = now + timedelta(hours=self.cfg["rkn_pdn_primary_hours"])
+            rkn_extended = now + timedelta(hours=self.cfg["rkn_pdn_extended_hours"])
             deadlines.append(("РКН первичное (149-ФЗ)", rkn_primary))
             deadlines.append(("РКН расширенное (149-ФЗ)", rkn_extended))
 
         for regulator, deadline in deadlines:
-            # Напомнить за 30 минут до дедлайна
             remind_at = deadline - timedelta(minutes=30)
             delay = max(0, (remind_at - datetime.now()).total_seconds())
             t = threading.Timer(
@@ -311,7 +315,7 @@ class AlertPipeline:
             )
 
     def process_alert(self, alert: dict):
-        """Основной метод обработки входящего алерта."""
+        """Main alert processing method."""
         title = alert.get("alert_title", "Unknown Incident")
         desc = alert.get("alert_description", "")
         source = alert.get("alert_source", "unknown")
@@ -322,7 +326,7 @@ class AlertPipeline:
             except Exception:
                 iocs = []
 
-        log.info(f"📥 Алерт получен: '{title}' (источник: {source})")
+        log.info(f"📥 Алерт: '{title}' (источник: {source})")
 
         # 1. Классификация
         incident_type = self.classifier.classify(title, desc)
@@ -336,48 +340,61 @@ class AlertPipeline:
         try:
             case_resp = self.iris.create_case(
                 title=f"[AUTO] {title}",
-                description=f"Автоматически создан pipeline из алерта.\n\n**Источник:** {source}\n\n{desc}",
+                description=(
+                    f"Автоматически создан pipeline из алерта."
+                    f"\n\n**Источник:** {source}\n\n{desc}"
+                ),
                 template_name=template,
                 tags=tags,
                 severity=severity
             )
-            case_id = case_resp.get("data", {}).get("case_id") or case_resp.get("case_id")
+            # FIX: явная проверка case_id из разных путей ответа IRIS API
+            case_id = (
+                case_resp.get("data", {}).get("case_id")
+                or case_resp.get("case_id")
+                or case_resp.get("data", {}).get("case_soc_id")
+            )
+            if not case_id:
+                log.error(f"❌ case_id не найден в ответе: {case_resp}")
+                return None
             log.info(f"✅ Кейс создан: #{case_id}")
         except Exception as e:
             log.error(f"❌ Ошибка создания кейса: {e}")
-            return
+            return None
 
         # 3. Добавление IOC
-        if iocs and case_id:
-            for ioc in iocs[:20]:  # максимум 20 IOC за раз
+        if iocs:
+            for ioc in iocs[:20]:
                 try:
                     ioc_val = ioc.get("value") or ioc.get("ioc_value", "")
                     ioc_type = ioc.get("type") or ioc.get("ioc_type", "ip")
-                    if ioc_val:
-                        # Обогащение VT
-                        ioc_desc = ""
-                        if self.enricher and ioc_type in ("md5", "sha256", "sha1"):
-                            vt_result = self.enricher.check_hash(ioc_val)
-                            if vt_result:
-                                ioc_desc = f"VT: {vt_result.get('malicious', 0)}/{vt_result.get('total', 0)} malicious"
-                        elif self.enricher and ioc_type == "ip":
-                            vt_result = self.enricher.check_ip(ioc_val)
-                            if vt_result:
-                                ioc_desc = f"VT malicious: {vt_result.get('malicious', 0)}, Country: {vt_result.get('country', '?')}"
-
-                        self.iris.add_ioc(case_id, ioc_val, ioc_type, ioc_desc)
-                        log.info(f"  IOC добавлен: {ioc_val} ({ioc_type})")
+                    if not ioc_val:
+                        continue
+                    ioc_desc = ""
+                    if self.enricher and ioc_type in ("md5", "sha256", "sha1"):
+                        vt_result = self.enricher.check_hash(ioc_val)
+                        if vt_result:
+                            ioc_desc = f"VT: {vt_result.get('malicious', 0)}/{vt_result.get('total', 0)} malicious"
+                    elif self.enricher and ioc_type == "ip":
+                        vt_result = self.enricher.check_ip(ioc_val)
+                        if vt_result:
+                            ioc_desc = (
+                                f"VT malicious: {vt_result.get('malicious', 0)}, "
+                                f"Country: {vt_result.get('country', '?')}"
+                            )
+                    self.iris.add_ioc(case_id, ioc_val, ioc_type, ioc_desc)
+                    log.info(f"  ✔ IOC: {ioc_val} ({ioc_type}) {ioc_desc}")
                 except Exception as e:
                     log.warning(f"  ⚠️ IOC ошибка: {e}")
 
         # 4. Уведомление SOC
-        if self.notifier and case_id:
+        if self.notifier:
             self.notifier.notify_case_created(
                 case_id, title, incident_type, self.cfg["iris"]["url"]
             )
 
         # 5. Таймеры регуляторных дедлайнов
-        if self.compliance_timer and case_id:
+        if self.compliance_timer:
             self.compliance_timer.schedule(case_id, title, incident_type)
 
         return case_id
@@ -394,30 +411,43 @@ class WebhookHandler(BaseHTTPRequestHandler):
         try:
             data = json.loads(body)
         except Exception:
-            self.send_response(400)
-            self.end_headers()
+            self._respond(400, {"status": "error", "msg": "invalid JSON"})
             return
 
         if self.path == "/webhook/alert":
             try:
                 case_id = self.pipeline.process_alert(data)
-                response = json.dumps({"status": "ok", "case_id": case_id}).encode()
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(response)
+                if case_id:
+                    self._respond(200, {"status": "ok", "case_id": case_id})
+                else:
+                    self._respond(500, {"status": "error", "msg": "case_id not returned"})
             except Exception as e:
                 log.error(f"Pipeline error: {e}")
-                self.send_response(500)
-                self.end_headers()
+                self._respond(500, {"status": "error", "msg": str(e)})
+
         elif self.path == "/webhook/ioc":
-            # IOC из кейса — авто-обогащение
-            log.info(f"IOC webhook: {data.get('ioc_value')}")
-            self.send_response(200)
-            self.end_headers()
+            log.info(f"IOC webhook: {data.get('ioc_value')} ({data.get('ioc_type')})")
+            # FIX: добавлен Content-Type header
+            self._respond(200, {"status": "ok"})
+
+        elif self.path == "/webhook/case":
+            log.info(f"Case webhook: #{data.get('case_id')} {data.get('case_name')}")
+            self._respond(200, {"status": "ok"})
+
+        elif self.path == "/health":
+            self._respond(200, {"status": "ok", "service": "iris-pipeline"})
+
         else:
-            self.send_response(404)
-            self.end_headers()
+            self._respond(404, {"status": "error", "msg": "not found"})
+
+    def _respond(self, code: int, body: dict):
+        """Helper: send JSON response with correct headers."""
+        response = json.dumps(body).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(response)))
+        self.end_headers()
+        self.wfile.write(response)
 
     def log_message(self, format, *args):
         log.info(f"HTTP {args[0]} {args[1]}")
@@ -426,7 +456,11 @@ class WebhookHandler(BaseHTTPRequestHandler):
 def run_webhook_server(pipeline: AlertPipeline, host: str = "0.0.0.0", port: int = 8000):
     WebhookHandler.pipeline = pipeline
     server = HTTPServer((host, port), WebhookHandler)
-    log.info(f"🚀 Pipeline webhook-сервер запущен на {host}:{port}")
+    log.info(f"🚀 Pipeline webhook-сервер запущен: http://{host}:{port}")
+    log.info(f"   /webhook/alert  — принимает алерты из IRIS")
+    log.info(f"   /webhook/ioc    — новые IOC из IRIS")
+    log.info(f"   /webhook/case   — новые кейсы из IRIS")
+    log.info(f"   /health         — healthcheck")
     server.serve_forever()
 
 
@@ -434,26 +468,53 @@ def run_webhook_server(pipeline: AlertPipeline, host: str = "0.0.0.0", port: int
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="DFIR-IRIS Incident Response Pipeline")
+    parser = argparse.ArgumentParser(description="DFIR-IRIS Incident Response Pipeline RU")
     parser.add_argument("--config", default="config/pipeline_config.yaml")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--host", default="0.0.0.0")
-    parser.add_argument("--test", action="store_true", help="Отправить тестовый алерт")
+    parser.add_argument("--test", action="store_true",
+                        help="Отправить тестовый алерт (Ransomware)")
+    parser.add_argument("--test-type",
+                        choices=["ransomware", "ddos", "apt_phishing", "data_breach"],
+                        default="ransomware",
+                        help="Тип тестового алерта")
     args = parser.parse_args()
 
     pipeline = AlertPipeline(args.config)
 
     if args.test:
-        test_alert = {
-            "alert_title": "Ransomware detected on WORKSTATION-42",
-            "alert_description": "EDR обнаружил процесс шифрования файлов. Расширение: .locked. Patient Zero: 192.168.10.42",
-            "alert_source": "EDR-Test",
-            "alert_iocs": [
-                {"value": "192.168.10.42", "type": "ip"},
-                {"value": "a3f1b2c4d5e6f7890123456789abcdef", "type": "md5"}
-            ]
+        test_alerts = {
+            "ransomware": {
+                "alert_title": "Ransomware detected on WORKSTATION-42",
+                "alert_description": "EDR обнаружил процесс шифрования. Extension: .locked",
+                "alert_source": "EDR-Test",
+                "alert_iocs": [
+                    {"value": "192.168.10.42", "type": "ip"},
+                    {"value": "a3f1b2c4d5e6f7890123456789abcdef", "type": "md5"}
+                ]
+            },
+            "ddos": {
+                "alert_title": "DDoS SYN flood detected on border router",
+                "alert_description": "Anti-DDoS: SYN flood 40Gbps from botnet",
+                "alert_source": "Anti-DDoS",
+                "alert_iocs": [{"value": "1.2.3.4", "type": "ip"}]
+            },
+            "apt_phishing": {
+                "alert_title": "Malicious attachment opened by user",
+                "alert_description": "Sandbox: phishing email with Lumma Stealer payload",
+                "alert_source": "PT-Sandbox",
+                "alert_iocs": [{"value": "evil.domain.ru", "type": "domain"}]
+            },
+            "data_breach": {
+                "alert_title": "Exfiltration of personal data detected",
+                "alert_description": "DLP: large upload to external cloud, PDn suspected, data leak",
+                "alert_source": "DLP",
+                "alert_iocs": []
+            }
         }
-        log.info("🧪 Запуск тестового алерта...")
-        pipeline.process_alert(test_alert)
+        test_alert = test_alerts[args.test_type]
+        log.info(f"🧪 Тест: {args.test_type.upper()}")
+        result = pipeline.process_alert(test_alert)
+        log.info(f"🏁 Результат: case_id={result}")
     else:
         run_webhook_server(pipeline, args.host, args.port)
