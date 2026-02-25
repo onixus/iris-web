@@ -80,6 +80,20 @@
 								<i class="flaticon-shapes-1"></i>
 							</a>
 						</li>
+
+						<!-- Language switcher -->
+						<li class="nav-item hidden-caret d-flex align-items-center" style="margin-left:8px;">
+							<button class="iris-locale-btn btn btn-sm" data-locale="en"
+								onclick="iris_set_locale('en')"
+								style="padding:2px 7px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.6);border-radius:4px;"
+								title="English">EN</button>
+							<button class="iris-locale-btn btn btn-sm ml-1" data-locale="ru"
+								onclick="iris_set_locale('ru')"
+								style="padding:2px 7px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,0.35);background:transparent;color:rgba(255,255,255,0.6);border-radius:4px;"
+								title="Russian">РУ</button>
+						</li>
+						<!-- End Language switcher -->
+
 					</ul>
 				</div>
 				{% endif %}

@@ -33,6 +33,15 @@
 	{% if current_user.in_dark_mode %}
 		<link rel="stylesheet" href="/static/assets/css/dark-theme.css">
 	{% endif %}
+
+	<!-- Active locale button style -->
+	<style>
+		.iris-locale-btn.active {
+			border-color: rgba(255,255,255,0.9) !important;
+			color: #fff !important;
+			background: rgba(255,255,255,0.15) !important;
+		}
+	</style>
 </head>
 <body>
 	<div class="wrapper {% block layout %}{% endblock layout %} {% include 'includes/sidebar_handler.html' %}">
@@ -99,6 +108,21 @@
 	<script src="/static/assets/js/plugin/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/assets/js/plugin/ace/src-noconflict/ext-language_tools.js" type="text/javascript"
     charset="utf-8"></script>
+
+	<!-- IRIS i18n — must load before common.js and page scripts -->
+	<script src="/static/assets/js/iris/i18n.js"></script>
+	<script>
+		// Restore saved locale and highlight active button
+		(function () {
+			var saved = localStorage.getItem('iris_locale') || 'en';
+			document.documentElement.setAttribute('lang', saved);
+			document.addEventListener('DOMContentLoaded', function () {
+				document.querySelectorAll('.iris-locale-btn').forEach(function (btn) {
+					btn.classList.toggle('active', btn.dataset.locale === saved);
+				});
+			});
+		}());
+	</script>
 
 	<!-- Iris Common -->
 	<script src="/static/assets/js/iris/common.js"></script>
