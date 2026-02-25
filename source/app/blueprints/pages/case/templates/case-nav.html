@@ -3,42 +3,42 @@
               <ul class="navbar-nav rounded" style="background-color:#4c72a130;">
             <li class="nav-item {{ active if page == 'case' }}">
                 <a class="nav-link" href="/case?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Summary</span>
+                    <span class="menu-title" data-i18n="cases.summary">Summary</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/notes?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Notes</span>
+                    <span class="menu-title" data-i18n="cases.notes">Notes</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/assets?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Assets</span>
+                    <span class="menu-title" data-i18n="cases.assets">Assets</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/ioc?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">IOC</span>
+                    <span class="menu-title" data-i18n="cases.ioc">IOC</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/timeline?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Timeline</span>
+                    <span class="menu-title" data-i18n="cases.timeline">Timeline</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/graph?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Graph</span>
+                    <span class="menu-title" data-i18n="cases.graph">Graph</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/tasks?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Tasks</span>
+                    <span class="menu-title" data-i18n="cases.tasks">Tasks</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/case/evidences?cid={{session['current_case'].case_id}}">
-                    <span class="menu-title">Evidence</span>
+                    <span class="menu-title" data-i18n="cases.evidence">Evidence</span>
                 </a>
             </li>
               </ul>
