@@ -1,0 +1,9 @@
+ioc_value,ioc_type,ioc_description,tlp,tags,case_id,source,confidence
+185.220.101.47,ip,Известный TOR exit node замечен в брутфорсе RDP,TLP:WHITE,brute-force;tor,CASE-2025-002,Threat Intel Feed,High
+5f4dcc3b5aa765d61d8327deb882cf99,md5,Хэш дроппера LockBit 3.0,TLP:AMBER,ransomware;lockbit,CASE-2025-001,EDR CrowdStrike,High
+hxxps://update-service[.]ru/payload.exe,url,C2 LockBit фейковый домен обновлений,TLP:RED,c2;lockbit;phishing,CASE-2025-001,NGFW,High
+svc_deploy_bkp,username,Скомпрометированная учётная запись службы,TLP:AMBER,insider;credential,CASE-2025-003,AD Audit,Medium
+162.247.74.201,ip,TOR exit node обнаружена exfiltration активность,TLP:WHITE,tor;exfiltration,CASE-2025-001,NGFW,High
+HKLM\SOFTWARE\Microsoft\Windows\Run\updater32,registry,Ключ автозапуска установленный Cobalt Strike,TLP:RED,apt;persistence;cobaltstrike,CASE-2025-005,Sysmon,High
+cobalt-update[.]com,domain,C2-домен группы Fancy Bear,TLP:RED,apt;fancy-bear;c2,CASE-2025-005,Threat Intel,High
+10.10.5.33,ip,Скомпрометированная рабочая станция HR-05,TLP:AMBER,lateral-movement;internal,CASE-2025-001,Sysmon,High

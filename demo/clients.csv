@@ -1,0 +1,5 @@
+client_name,client_description,customer_id,sla_hours,industry,contact_email
+ООО «РосТехПром»,Промышленное предприятие 3000 сотрудников,RTP-001,4,Промышленность,security@rostech.ru
+АО «БанкИнвест»,Финансовая организация SOC уровня L2,BI-002,2,Финансы,ciso@bankinvest.ru
+ФГУП «ГосСети»,Критическая инфраструктура (КИИ),GS-003,1,Энергетика,ir@gosseti.gov.ru
+ООО «МедСервис»,Медицинская организация ПДн 152-ФЗ,MS-004,8,Здравоохранение,security@medservice.ru

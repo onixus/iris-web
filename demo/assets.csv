@@ -1,0 +1,8 @@
+asset_name,asset_type,asset_ip,asset_os,compromise_status,analysis_status,case_id,domain,criticality
+DC-01.rostech.local,Контроллер домена,10.10.1.10,Windows Server 2019,Скомпрометирован,Проанализирован,CASE-2025-001,rostech.local,Critical
+FILE-SRV-02,Файловый сервер,10.10.1.22,Windows Server 2016,Под угрозой,В работе,CASE-2025-001,rostech.local,High
+W10-HR-05,Рабочая станция,10.10.5.33,Windows 10 Pro,Скомпрометирован,Проанализирован,CASE-2025-001,rostech.local,Medium
+ESXi-PROD-01,Гипервизор,10.10.0.5,VMware ESXi 7.0,Подозрение,В работе,CASE-2025-005,gosseti.local,Critical
+SIEM-SERVER,Сервер SIEM,10.10.2.100,Ubuntu 22.04,Не скомпрометирован,Не начат,CASE-2025-001,rostech.local,High
+FW-CORE-01,Межсетевой экран,10.10.0.1,Palo Alto PAN-OS,Не скомпрометирован,Проанализирован,CASE-2025-001,rostech.local,Critical
+W10-FIN-01,Рабочая станция,10.10.6.11,Windows 10 Pro,Скомпрометирован,В работе,CASE-2025-002,bankinvest.local,High

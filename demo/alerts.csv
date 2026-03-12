@@ -1,0 +1,7 @@
+alert_title,alert_source,alert_severity,alert_status,ioc_value,classification,case_id,alert_date,description
+Обнаружен Mimikatz на DC-01,CrowdStrike Falcon,Critical,Эскалирован,dc-01.rostech.local,Вредоносное ПО,CASE-2025-001,2025-11-14 03:05,Обнаружен дамп памяти LSASS процессом mimikatz.exe
+Аномальный RDP-брутфорс,Microsoft Sentinel,High,Открыт,185.220.101.47,Brute Force,CASE-2025-002,2025-11-15 01:22,Более 2500 попыток аутентификации RDP за 10 минут с одного IP
+PowerShell Encoded Command,Sysmon + ELK,High,Открыт,w10-hr-05.local,Выполнение команд,CASE-2025-001,2025-11-14 02:33,Запуск PowerShell с параметром -EncodedCommand на хосте HR-05
+Исходящий трафик на TOR exit node,NGFW Palo Alto,Medium,В работе,162.247.74.201,Утечка данных,CASE-2025-001,2025-11-14 04:30,Сессия 45 минут к известному TOR exit node с файлового сервера
+Превышение прав учётной записи,Active Directory,Medium,Закрыт,svc_backup,Привилегии,CASE-2025-003,2025-10-02 11:15,Учётная запись svc_backup добавлена в группу Domain Admins
+Запуск psexec в нерабочее время,SIEM QRadar,High,Эскалирован,10.10.5.33,Боковое перемещение,CASE-2025-001,2025-11-14 03:02,PsExec запущен в 03:02 UTC с хоста W10-HR-05 в сторону DC-01
